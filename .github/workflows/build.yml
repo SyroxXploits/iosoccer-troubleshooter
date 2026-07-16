@@ -1,0 +1,40 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile source
+        run: python -m py_compile iosoccer_troubleshooter_ttk.py
+      - name: Build executable
+        run: python -m PyInstaller --noconfirm --clean --onefile --windowed --name "IOSoccer Troubleshooter" iosoccer_troubleshooter_ttk.py
+      - name: Create checksum
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash "dist/IOSoccer Troubleshooter.exe" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  IOSoccer Troubleshooter.exe" | Set-Content "dist/IOSoccer Troubleshooter.exe.sha256" -Encoding ascii
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iosoccer-troubleshooter-windows
+          path: |
+            dist/IOSoccer Troubleshooter.exe
+            dist/IOSoccer Troubleshooter.exe.sha256
