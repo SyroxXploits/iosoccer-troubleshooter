@@ -113,3 +113,9 @@ The app falls back to an embedded template so the reset action still works.
 ## License
 
 MIT - see [LICENSE](LICENSE)
+
+## Project policies
+
+- [Privacy](PRIVACY.md)
+- [Security](SECURITY.md)
+- [Code signing](CODE_SIGNING_POLICY.md)
